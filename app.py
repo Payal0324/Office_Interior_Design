@@ -2,6 +2,9 @@ import io
 import json
 
 import streamlit as st
+from google import genai
+
+client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
 
 from groq_layout_generator import generate_layout, AVAILABLE_MODELS
 from floorplan_renderer import render_floor_plan
