@@ -2,7 +2,6 @@ import io
 import json
 
 import streamlit as st
-from google import genai
 
 from groq_layout_generator import generate_layout, AVAILABLE_MODELS
 from floorplan_renderer import render_floor_plan
