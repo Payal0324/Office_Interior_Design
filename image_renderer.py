@@ -10,8 +10,7 @@ is not pixel-matched to exact desk positions in the blueprint.
 Requires: pip install openai
 """
 
-import base64
-from openai import OpenAI
+from huggingface_hub import InferenceClient
 
 # Small palette of common color names used to translate hex codes into
 # words an image model understands well (e.g. "#4C8BF5" -> "blue").
@@ -108,18 +107,20 @@ def build_prompt(layout: dict, colors: dict, style: str = "Modern minimal", extr
 
 
 def generate_image(api_key: str, prompt: str, size: str = "1024x1024", quality: str = "medium") -> bytes:
-    """
-    Call OpenAI's image API and return raw PNG bytes.
-    size: one of "1024x1024", "1536x1024" (landscape), "1024x1536" (portrait)
-    quality: "low" | "medium" | "high"
-    """
-    client = OpenAI(api_key=api_key)
-    result = client.images.generate(
-        model="gpt-image-1",
-        prompt=prompt,
-        size=size,
-        quality=quality,
-        n=1,
+
+    client = InferenceClient(
+        provider="hf-inference",
+        api_key=api_key
     )
-    b64_data = result.data[0].b64_json
-    return base64.b64decode(b64_data)
+
+    image = client.text_to_image(
+        prompt,
+        model="black-forest-labs/FLUX.1-dev"
+    )
+
+    from io import BytesIO
+
+    img_bytes = BytesIO()
+    image.save(img_bytes, format="PNG")
+
+    return img_bytes.getvalue()
