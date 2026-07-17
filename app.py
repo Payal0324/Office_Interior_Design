@@ -243,15 +243,21 @@ with tab_image:
     generate_photo = st.button("🎨 Generate Photoreal Render", type="primary", use_container_width=True)
 
     if generate_photo:
-        if not openai_api_key:
-            st.error("Please enter your OpenAI API key in the sidebar.")
+        if not hf_api_key:
+            st.error("Please enter your Hugging Face API key in the sidebar.")
         else:
             with st.spinner("🖌️ Rendering your office... this can take 10-30 seconds"):
                 try:
-                    img_bytes = generate_image(openai_api_key, edited_prompt,
-                                                size=size_value, quality=img_quality)
+                    img_bytes = generate_image(
+                    hf_api_key,
+                    edited_prompt,
+                    size=size_value,
+                    quality=img_quality
+                 )
+
                     st.session_state.photo_bytes = img_bytes
                     st.session_state.photo_prompt = edited_prompt
+
                 except Exception as e:
                     st.error(f"Image generation failed: {e}")
 
