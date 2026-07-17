@@ -3,4 +3,5 @@ groq>=0.9.0
 matplotlib>=3.8
 numpy>=1.26
 plotly>=5.22
-google-genai
+huggingface_hub
+Pillow
