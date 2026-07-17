@@ -6,7 +6,7 @@ import streamlit as st
 from groq_layout_generator import generate_layout, AVAILABLE_MODELS
 from floorplan_renderer import render_floor_plan
 from plan3d_renderer import render_3d_plan
-from image_renderer import build_prompt, generate image
+from image_renderer import build_prompt, generate_image
 from color_theme import DEFAULT_COLORS, build_colors
 from sample_layout import SAMPLE_LAYOUT
 
