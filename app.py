@@ -73,11 +73,11 @@ st.markdown("""
 # Sidebar - inputs
 # ---------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("### 🔑 Groq API")
-    default_key = st.secrets.get("GROQ_API_KEY", "") if hasattr(st, "secrets") else ""
-    api_key = st.text_input("Groq API Key", value=default_key, type="password",
-                             help="Get a free key at https://console.groq.com/keys")
-    model = st.selectbox("Model", AVAILABLE_MODELS, index=0)
+    #st.markdown("### 🔑 Groq API")
+    #default_key = st.secrets.get("GROQ_API_KEY", "") if hasattr(st, "secrets") else ""
+    #api_key = st.text_input("Groq API Key", value=default_key, type="password",
+    #                         help="Get a free key at https://console.groq.com/keys")
+    #model = st.selectbox("Model", AVAILABLE_MODELS, index=0)
 
     st.markdown("### 📐 Room Dimensions")
     c1, c2 = st.columns(2)
