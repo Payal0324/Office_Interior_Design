@@ -6,6 +6,7 @@ import streamlit as st
 from groq_layout_generator import generate_layout, AVAILABLE_MODELS
 from floorplan_renderer import render_floor_plan
 from plan3d_renderer import render_3d_plan
+from image_renderer import build_prompt, generate image
 from color_theme import DEFAULT_COLORS, build_colors
 from sample_layout import SAMPLE_LAYOUT
 
@@ -78,6 +79,11 @@ with st.sidebar:
     api_key = st.text_input("Groq API Key", value=default_key, type="password",
                              help="Get a free key at https://console.groq.com/keys")
     model = st.selectbox("Model", AVAILABLE_MODELS, index=0)
+    
+     st.markdown("### 📸 OpenAI API (for photoreal render)")
+    default_openai_key = st.secrets.get("OPENAI_API_KEY", "") if hasattr(st, "secrets") else ""
+    openai_api_key = st.text_input("OpenAI API Key", value=default_openai_key, type="password",
+                                    help="Get a key at https://platform.openai.com/api-keys")
 
     st.markdown("### 📐 Room Dimensions")
     c1, c2 = st.columns(2)
@@ -184,7 +190,9 @@ st.write("")
 # ---------------------------------------------------------------------------
 # Tabs: 2D blueprint / 3D view / data
 # ---------------------------------------------------------------------------
-tab_2d, tab_3d, tab_data = st.tabs(["📐 2D Blueprint", "🧊 Interactive 3D View", "🗂️ Data & Export"])
+tab_2d, tab_3d, tab_image, tab_data = st.tabs(
+    ["📐 2D Blueprint", "🧊 Interactive 3D View", "📸 Photoreal Render", "🗂️ Data & Export"]
+)
 
 with tab_2d:
     fig = render_floor_plan(layout, colors=colors)
@@ -198,6 +206,51 @@ with tab_3d:
     st.caption("🖱️ Drag to rotate · scroll to zoom · shift-drag to pan")
     fig3d = render_3d_plan(layout, colors=colors)
     st.plotly_chart(fig3d, use_container_width=True, config={"displaylogo": False})
+
+with tab_image:
+    st.caption("Generates a photorealistic 'mood render' of your office in the chosen style and palette. "
+               "It reflects the right zones, furniture mix, and colors — not pixel-exact desk positions.")
+
+    if "photo_bytes" not in st.session_state:
+        st.session_state.photo_bytes = None
+    if "photo_prompt" not in st.session_state:
+        st.session_state.photo_prompt = build_prompt(layout, colors, style=style)
+
+    col_prompt, col_settings = st.columns([3, 1])
+    with col_prompt:
+        edited_prompt = st.text_area("Prompt (auto-built from your layout — feel free to edit)",
+                                      value=st.session_state.photo_prompt, height=160)
+    with col_settings:
+        img_size = st.selectbox("Aspect", ["1536x1024 (landscape)", "1024x1024 (square)", "1024x1536 (portrait)"])
+        size_value = img_size.split(" ")[0]
+        img_quality = st.selectbox("Quality", ["medium", "high", "low"])
+        regen_prompt = st.button("🔄 Rebuild prompt from current layout", use_container_width=True)
+
+    if regen_prompt:
+        st.session_state.photo_prompt = build_prompt(layout, colors, style=style)
+        st.rerun()
+
+    generate_photo = st.button("🎨 Generate Photoreal Render", type="primary", use_container_width=True)
+
+    if generate_photo:
+        if not openai_api_key:
+            st.error("Please enter your OpenAI API key in the sidebar.")
+        else:
+            with st.spinner("🖌️ Rendering your office... this can take 10-30 seconds"):
+                try:
+                    img_bytes = generate_image(openai_api_key, edited_prompt,
+                                                size=size_value, quality=img_quality)
+                    st.session_state.photo_bytes = img_bytes
+                    st.session_state.photo_prompt = edited_prompt
+                except Exception as e:
+                    st.error(f"Image generation failed: {e}")
+
+    if st.session_state.photo_bytes:
+        st.image(st.session_state.photo_bytes, use_container_width=True)
+        st.download_button("⬇ Download render (PNG)", data=st.session_state.photo_bytes,
+                            file_name="office_photoreal_render.png", mime="image/png")
+    else:
+        st.info("Click **Generate Photoreal Render** to create your first image.")
 
 with tab_data:
     col_json, col_edit = st.columns(2)
