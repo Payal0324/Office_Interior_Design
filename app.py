@@ -80,10 +80,18 @@ with st.sidebar:
                              help="Get a free key at https://console.groq.com/keys")
     model = st.selectbox("Model", AVAILABLE_MODELS, index=0)
     
-    st.markdown("### 📸 OpenAI API (for photoreal render)")
-    default_openai_key = st.secrets.get("OPENAI_API_KEY", "") if hasattr(st, "secrets") else ""
-    openai_api_key = st.text_input("OpenAI API Key", value=default_openai_key, type="password",
-                                    help="Get a key at https://platform.openai.com/api-keys")
+    st.markdown("### 🤖 Google AI Studio API")
+    default_google_key = (
+    st.secrets.get("GOOGLE_API_KEY", "")
+    if hasattr(st, "secrets")
+    else ""
+    )
+    google_api_key = st.text_input(
+    "Google AI Studio API Key",
+    value=default_google_key,
+    type="password",
+    help="Get a free API key at https://aistudio.google.com/app/apikey"
+    )
 
     st.markdown("### 📐 Room Dimensions")
     c1, c2 = st.columns(2)
