@@ -80,7 +80,7 @@ with st.sidebar:
                              help="Get a free key at https://console.groq.com/keys")
     model = st.selectbox("Model", AVAILABLE_MODELS, index=0)
     
-     st.markdown("### 📸 OpenAI API (for photoreal render)")
+    st.markdown("### 📸 OpenAI API (for photoreal render)")
     default_openai_key = st.secrets.get("OPENAI_API_KEY", "") if hasattr(st, "secrets") else ""
     openai_api_key = st.text_input("OpenAI API Key", value=default_openai_key, type="password",
                                     help="Get a key at https://platform.openai.com/api-keys")
