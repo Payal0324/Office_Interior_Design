@@ -83,17 +83,18 @@ with st.sidebar:
                              help="Get a free key at https://console.groq.com/keys")
     model = st.selectbox("Model", AVAILABLE_MODELS, index=0)
     
-    st.markdown("### 🤖 Google AI Studio API")
-    default_google_key = (
-    st.secrets.get("GOOGLE_API_KEY", "")
+    st.markdown("### 🎨 Hugging Face API (for photoreal render)")
+    default_hf_key = (
+    st.secrets.get("HUGGINGFACE_API_KEY", "")
     if hasattr(st, "secrets")
     else ""
     )
-    google_api_key = st.text_input(
-    "Google AI Studio API Key",
-    value=default_google_key,
+
+    hf_api_key = st.text_input(
+    "Hugging Face API Key",
+    value=default_hf_key,
     type="password",
-    help="Get a free API key at https://aistudio.google.com/app/apikey"
+    help="Get a free key at https://huggingface.co/settings/tokens"
     )
 
     st.markdown("### 📐 Room Dimensions")
